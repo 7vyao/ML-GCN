@@ -298,7 +298,9 @@ def gen_A(num_classes, t, adj_file):
     _adj[_adj < t] = 0
     _adj[_adj >= t] = 1
     _adj = _adj * 0.25 / (_adj.sum(0, keepdims=True) + 1e-6)
-    _adj = _adj + np.identity(num_classes, np.int)
+    #_adj = _adj + np.identity(num_classes, np.int)    更改-------------------
+    _adj = _adj + np.identity(num_classes, int)
+    #------------------------------------------------------------------------
     return _adj
 
 def gen_adj(A):

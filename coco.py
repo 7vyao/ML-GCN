@@ -26,33 +26,41 @@ def download_coco2014(root, phase):
     elif phase == 'val':
         filename = 'val2014.zip'
     cached_file = os.path.join(tmpdir, filename)
-    if not os.path.exists(cached_file):
-        print('Downloading: "{}" to {}\n'.format(urls[phase + '_img'], cached_file))
-        os.chdir(tmpdir)
-        subprocess.call('wget ' + urls[phase + '_img'], shell=True)
-        os.chdir(root)
+
+    # 改成手动下载数据集----------------------------------------------------------------------------------------
+    # if not os.path.exists(cached_file):
+    #     print('Downloading: "{}" to {}\n'.format(urls[phase + '_img'], cached_file))
+    #     os.chdir(tmpdir)
+    #     subprocess.call('wget ' + urls[phase + '_img'], shell=True)
+    #     os.chdir(root)
+
+
     # extract file
-    img_data = os.path.join(data, filename.split('.')[0])
-    if not os.path.exists(img_data):
-        print('[dataset] Extracting tar file {file} to {path}'.format(file=cached_file, path=data))
-        command = 'unzip {} -d {}'.format(cached_file,data)
-        os.system(command)
+    # img_data = os.path.join(data, filename.split('.')[0])
+    # if not os.path.exists(img_data):
+    #     print('[dataset] Extracting tar file {file} to {path}'.format(file=cached_file, path=data))
+    #     command = 'unzip {} -d {}'.format(cached_file,data)
+    #     os.system(command)
     print('[dataset] Done!')
 
     # train/val images/annotations
-    cached_file = os.path.join(tmpdir, 'annotations_trainval2014.zip')
-    if not os.path.exists(cached_file):
-        print('Downloading: "{}" to {}\n'.format(urls['annotations'], cached_file))
-        os.chdir(tmpdir)
-        subprocess.Popen('wget ' + urls['annotations'], shell=True)
-        os.chdir(root)
-    annotations_data = os.path.join(data, 'annotations')
-    if not os.path.exists(annotations_data):
-        print('[dataset] Extracting tar file {file} to {path}'.format(file=cached_file, path=data))
-        command = 'unzip {} -d {}'.format(cached_file, data)
-        os.system(command)
+    # cached_file = os.path.join(tmpdir, 'annotations_trainval2014.zip')
+    # if not os.path.exists(cached_file):
+    #     print('Downloading: "{}" to {}\n'.format(urls['annotations'], cached_file))
+    #     os.chdir(tmpdir)
+    #     subprocess.Popen('wget ' + urls['annotations'], shell=True)
+    #     os.chdir(root)
+
+    # annotations_data = os.path.join(data, 'annotations')    更改-------------------------------
+    annotations_data = os.path.join(root, 'annotations')
+    # if not os.path.exists(annotations_data):
+    #     print('[dataset] Extracting tar file {file} to {path}'.format(file=cached_file, path=data))
+    #     command = 'unzip {} -d {}'.format(cached_file, data)
+    #     os.system(command)
+    #---------------------------------------------------------------------------------------------------------
     print('[annotation] Done!')
 
+    #生成 annotations json 文件
     anno = os.path.join(data, '{}_anno.json'.format(phase))
     img_id = {}
     annotations_id = {}
@@ -127,7 +135,9 @@ class COCO2014(data.Dataset):
     def get(self, item):
         filename = item['file_name']
         labels = sorted(item['labels'])
-        img = Image.open(os.path.join(self.root, 'data', '{}2014'.format(self.phase), filename)).convert('RGB')
+        #img = Image.open(os.path.join(self.root, 'data', '{}2014'.format(self.phase), filename)).convert('RGB')   更改-----------
+        img = Image.open(os.path.join(self.root, '{}2014'.format(self.phase), filename)).convert('RGB')
+        #------------------------------------------------------------------------------------------------------------------------
         if self.transform is not None:
             img = self.transform(img)
         target = np.zeros(self.num_classes, np.float32) - 1

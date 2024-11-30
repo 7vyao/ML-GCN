@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+import numpy as np
 import torch.backends.cudnn as cudnn
 import torch.nn.parallel
 import torch.optim
@@ -8,7 +9,9 @@ import torch.utils.data
 import torchnet as tnt
 import torchvision.transforms as transforms
 import torch.nn as nn
-from util import *
+from tqdm import tqdm
+from util import AveragePrecisionMeter, MultiScaleCrop, Warp
+
 
 tqdm.monitor_interval = 0
 class Engine(object):
@@ -77,7 +80,9 @@ class Engine(object):
     def on_end_batch(self, training, model, criterion, data_loader, optimizer=None, display=True):
 
         # record loss
-        self.state['loss_batch'] = self.state['loss'].data[0]
+        #self.state['loss_batch'] = self.state['loss'].data[0]   更改----------------------------
+        self.state['loss_batch'] = self.state['loss'].item()
+        #---------------------------------------------------------------------------------------
         self.state['meter_loss'].add(self.state['loss_batch'])
 
         if display and self.state['print_freq'] != 0 and self.state['iteration'] % self.state['print_freq'] == 0:
@@ -239,7 +244,7 @@ class Engine(object):
             self.on_start_batch(True, model, criterion, data_loader, optimizer)
 
             if self.state['use_gpu']:
-                self.state['target'] = self.state['target'].cuda(async=True)
+                self.state['target'] = self.state['target'].cuda(non_blocking=True)
 
             self.on_forward(True, model, criterion, data_loader, optimizer)
 
@@ -275,7 +280,7 @@ class Engine(object):
             self.on_start_batch(False, model, criterion, data_loader)
 
             if self.state['use_gpu']:
-                self.state['target'] = self.state['target'].cuda(async=True)
+                self.state['target'] = self.state['target'].cuda(non_blocking=True)
 
             self.on_forward(False, model, criterion, data_loader)
 
