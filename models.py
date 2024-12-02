@@ -91,9 +91,19 @@ class GCNResnet(nn.Module):
 
 
 
-def gcn_resnet101(num_classes, t, pretrained=False, adj_file=None, in_channel=300):
+#def gcn_resnet101(num_classes, t, pretrained=False, adj_file=None, in_channel=300):    更改-----------------------
+def gcn_resnet101(num_classes, t, pretrained=False, adj_file=None, in_channel=300, checkpoint_path=None):
+#-----------------------------------------------------------------------------------------------------------------
     # model = models.resnet101(pretrained=pretrained)  更改-------------------------
     weights = models.ResNet101_Weights.IMAGENET1K_V1 if pretrained else None
     model = models.resnet101(weights=weights)
     #------------------------------------------------------------------------------
+
+    #加入预训练权重-------------------------------------------------------------------
+    if checkpoint_path:
+        checkpoint = torch.load(checkpoint_path)
+        model.load_state_dict(checkpoint['state_dict'], strict=False)
+        print(f"Loaded model weights from {checkpoint_path}")
+    #------------------------------------------------------------------------------
+
     return GCNResnet(model, num_classes, t=t, adj_file=adj_file, in_channel=in_channel)

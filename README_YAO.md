@@ -6,3 +6,7 @@
 3.engine文件83行， .data[0]（在pytorch0.4版本后被弃用）更改为 .item()
 4.models文件95行，pretrained（在pytorch1.13版本后被弃用）更改为weights，且ResNet101 的预训练权重可以使用 ResNet101_Weights.IMAGENET1K_V1（models）
 5.util文件301行，np.int（在numpy1.20版本后被弃用）更改为python内置的int
+
+补充修改
+1.models文件“gcn_resnet101”函数，初始化模型权重加入“checkpoint_path”参数，使用预训练过的模型权重
+2.demo_coco_gcn.py文件51行，加入预训练模型权重

@@ -48,7 +48,9 @@ def main_coco():
     val_dataset = COCO2014(args.data, phase='val', inp_name='data/coco/coco_glove_word2vec.pkl')
     num_classes = 80
 
-    model = gcn_resnet101(num_classes=num_classes, t=0.4, adj_file='data/coco/coco_adj.pkl')
+    #model = gcn_resnet101(num_classes=num_classes, t=0.4, adj_file='data/coco/coco_adj.pkl')   更改---------------
+    model = gcn_resnet101(num_classes=num_classes, t=0.4, adj_file='data/coco/coco_adj.pkl', checkpoint_path='coco_checkpoint.pth/coco_checkpoint.pth')
+    #-------------------------------------------------------------------------------------------------------------
 
     # define loss function (criterion)
     criterion = nn.MultiLabelSoftMarginLoss()
